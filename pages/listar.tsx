@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
-import {FaEdit, FaTrash} from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import UsuarioService from "@/services/usuarioService";
 
 const ListarUsuarios = () => {
     const [usuarios, setUsuarios] = useState<any>(null);
-    const [error, setError] = useState(null)
-    const navigate = useNavigate()
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         UsuarioService.getUsuarios().then((data) => {
@@ -43,29 +42,29 @@ const ListarUsuarios = () => {
             <h3>Lista de Usuarios</h3>
             <Table responsive="sm">
                 <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Username</th>
-                    <th>Ações</th>
-                </tr>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Username</th>
+                        <th>Ações</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {usuarios.map((usuario: any) => (
-                    <tr key={usuario.id}>
-                        <td>{usuario.nome}</td>
-                        <td>{usuario.email}</td>
-                        <td>{usuario.username}</td>
-                        <td>
-                            <Button onClick={() => navigate(`/atualizar/${usuario.id}`)}>
-                                <FaEdit />
-                            </Button>
-                            <Button onClick={() => handleRemove(usuario.id)}>
-                                <FaTrash />
-                            </Button>
-                        </td>
-                    </tr>
-                ))}
+                    {usuarios.map((usuario: any) => (
+                        <tr key={usuario.id}>
+                            <td>{usuario.cpf}</td>
+                            <td>{usuario.name}</td>
+                            <td>{usuario.mail}</td>
+                            <td>
+                                {/* <Button onClick={() => navigate(`/atualizar/${usuario.id}`)}>
+                                    <FaEdit />
+                                </Button> */}
+                                <Button onClick={() => handleRemove(usuario.id)}>
+                                    <FaTrash />
+                                </Button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </Table>
         </div>

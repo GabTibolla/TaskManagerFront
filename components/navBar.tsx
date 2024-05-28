@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function NavBar() {
     return (
@@ -6,11 +6,11 @@ export default function NavBar() {
             <div className="container-fluid">
                 <div className="navbar-nav mr-auto">
                     <Link to="/" className="navbar-brand px-3">
-                        <span className="navbar-text">React CRUD</span>
+                        <span className="navbar-text">Task Manager</span>
                     </Link>
                     <li className="nav-item">
                         <Link to={"/registrar"} className="nav-link">
-                            Registrar
+                            Criar Task
                         </Link>
                     </li>
                     <li className="nav-item">
@@ -22,7 +22,7 @@ export default function NavBar() {
                 <div className="navbar-nav ml-auto px-3">
                     <li className="nav-item">
                         <Link to={"/"} className="nav-link">
-                        Logout
+                            Logout
                         </Link>
                     </li>
                 </div>

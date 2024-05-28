@@ -1,15 +1,15 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/usuarios'
+const baseUrl = 'http://localhost:8080'
 
 class UsuarioService {
     getUsuarios() {
-        return axios.get(`${baseUrl}/listar`)
+        return axios.get(`${baseUrl}/usuarios`)
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error fetching data:', error)
             }
-        )
+            )
     }
 
     getUsuario(id: any) {
@@ -26,7 +26,7 @@ class UsuarioService {
             .catch((error) => {
                 console.error('Error fetching data:', error)
             }
-        )
+            )
     }
 
     deleteUsuario(id: any) {

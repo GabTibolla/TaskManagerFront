@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -6,33 +6,54 @@ import Col from 'react-bootstrap/Col';
 import { useRouter } from 'next/router'; // Use Next.js router instead of react-router-dom
 import UsuarioService from "@/services/usuarioService";
 
+// Definindo a interface para os dados retornados pela API
+interface Usuario {
+    id: string;
+    nome: string;
+}
+
 const CriarTask = () => {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        taskStatus: 'PENDENTE', // Valor inicial do radio button
+        taskStatus: 'PENDENTE',
         titulo: '',
         descricao: '',
-        selectedOption: '', // Novo campo para a combo box
+        selectedOption: '',
     });
 
-    const handleChange = (event: any) => {
+    const [options, setOptions] = useState<Usuario[]>([]);
+
+    useEffect(() => {
+        UsuarioService.getUsuarioDev()
+            .then((data) => {
+                setOptions(data);
+                console.log(data); // Verifique a estrutura dos dados no console
+            })
+            .catch((error) => {
+                console.error('Erro ao listar usuários:', error);
+            });
+    }, []); // Passando um array vazio para garantir que a requisição seja feita apenas uma vez
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [event.target.name]: event.target.value });
     };
 
-    const handleSubmit = async (event: any) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // Prevent default form submission
 
-        UsuarioService.addUsuario(formData).then((response) => {
-            console.log('Usuario adicionado:', response);
-            setFormData({
-                taskStatus: 'PENDENTE',
-                titulo: '',
-                descricao: '',
-                selectedOption: '',
+        UsuarioService.addUsuario(formData)
+            .then((response) => {
+                console.log('Usuario adicionado:', response);
+                setFormData({
+                    taskStatus: 'PENDENTE',
+                    titulo: '',
+                    descricao: '',
+                    selectedOption: '',
+                });
+            })
+            .catch((error) => {
+                console.log('Erro ao adicionar o usuario:', error);
             });
-        }).catch((error) => {
-            console.log('Erro ao adicionar o usuario:', error);
-        });
     };
 
     return (
@@ -95,7 +116,7 @@ const CriarTask = () => {
                     </Col>
                     <Col>
                         <Form.Group className="mb-3">
-                            <Form.Label>Opções</Form.Label>
+                            <Form.Label>Atribuido para:</Form.Label>
                             <Form.Select
                                 id="selectedOption"
                                 name="selectedOption"
@@ -103,9 +124,9 @@ const CriarTask = () => {
                                 onChange={handleChange}
                             >
                                 <option value="">Selecione uma opção</option>
-                                <option value="opcao1">Opção 1</option>
-                                <option value="opcao2">Opção 2</option>
-                                <option value="opcao3">Opção 3</option>
+                                {options.map((option) => (
+                                    <option key={option.id} value={option.id}>{option.name}</option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
                     </Col>

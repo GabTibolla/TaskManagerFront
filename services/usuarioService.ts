@@ -19,7 +19,13 @@ class UsuarioService {
                 console.error('Error fetching data:', error);
             });
     }
-
+    getUsuarioDev() {
+        return axios.get(`${baseUrl}/usuarios/dev`)
+            .then(response => response.data)
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
 
     addUsuario(data: any) {
         return axios.post(`${baseUrl}/registrar`, data)

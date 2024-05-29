@@ -48,7 +48,7 @@ const CriarSubTask = () => {
         <Form.Group className="mb-3">
           <Form.Label>Titulo</Form.Label>
           <Form.Control
-            type="text"
+            type="number"
             placeholder="Insira o tempo em horas"
             id="timeHours"
             name="timeHours"

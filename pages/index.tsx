@@ -7,24 +7,27 @@ import Update from "@/pages/update";
 import LoginForm from './'; // Importe o LoginForm
 import usuarioService from '@/services/usuarioService';
 import { useState } from 'react';
+import CriarSubTask from "./criar_subTask";
 
 const App = () => {
-  const [email, setEmail] = useState('');
-  const [CPF, setCPF] = useState('');
+  const [email, setEmail] = useState("");
+  const [CPF, setCPF] = useState("");
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    console.log('Email:', email);
-    console.log('CPF:', CPF);
+    console.log("Email:", email);
+    console.log("CPF:", CPF);
 
-    usuarioService.getUsuarioLogin(email, CPF).then((response) => {
-      console.log('Usuario logado:', response);
-      window.location.href = '/listar';
-    }).catch((error) => {
-      console.error('Erro ao logar o usuario:', error);
-    });
+    usuarioService
+      .getUsuarioLogin(email, CPF)
+      .then((response) => {
+        console.log("Usuario logado:", response);
+        window.location.href = "/listar";
+      })
+      .catch((error) => {
+        console.error("Erro ao logar o usuario:", error);
+      });
   };
-
 
   return (
     <Router>
@@ -34,50 +37,57 @@ const App = () => {
         </header>
         <main className="container">
           <Routes>
-            <Route path="/" element={
-              <div style={styles.container}>
-                <form onSubmit={handleSubmit} style={styles.form}>
-                  <h1 style={styles.title}>Login</h1>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label} htmlFor="email">Email: </label>
-                    <input
-                      style={styles.input}
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label style={styles.label} htmlFor="CPF">CPF: </label>
-                    <input
-                      style={styles.input}
-                      type="text"
-                      id="CPF"
-                      value={CPF}
-                      onChange={(e) => setCPF(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button type="submit" style={styles.button}>Login</button>
-                </form>
-              </div>
-            } />
-
-
-
+            <Route
+              path="/"
+              element={
+                <div style={styles.container}>
+                  <form onSubmit={handleSubmit} style={styles.form}>
+                    <h1 style={styles.title}>Login</h1>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label} htmlFor="email">
+                        Email:{" "}
+                      </label>
+                      <input
+                        style={styles.input}
+                        type="email"
+                        id="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div style={styles.inputGroup}>
+                      <label style={styles.label} htmlFor="CPF">
+                        CPF:{" "}
+                      </label>
+                      <input
+                        style={styles.input}
+                        type="text"
+                        id="CPF"
+                        value={CPF}
+                        onChange={(e) => setCPF(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button type="submit" style={styles.button}>
+                      Login
+                    </button>
+                  </form>
+                </div>
+              }
+            />
 
             <Route path="/home" element={<h1>Home</h1>} />
             <Route path="/registrar" element={<CriarTask />} />
             <Route path="/listar" element={<Listar />} />
             <Route path="/atualizar/:itemId" element={<Update />} />
+            <Route path="/criarSubTask" element={<CriarSubTask />} />
           </Routes>
         </main>
       </div>
     </Router>
   );
-}
+};
 
 
 const styles = {

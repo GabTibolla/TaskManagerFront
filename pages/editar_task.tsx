@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import UsuarioService from "@/services/usuarioService";
 import TaskService from "@/services/taskService";
 import AuthContext from "@/components/authContext";
@@ -13,17 +13,15 @@ interface Usuario {
     name: string;
 }
 
-const CriarTask = () => {
-    const navigate = useNavigate()
-    // pegando id do usuario logado
-    const { id } = useContext(AuthContext);
-
+const EditarTask = () => {
+    const navigate = useNavigate();
+    const { id: userId } = useContext(AuthContext);
+    const { taskId } = useParams<{ taskId: string }>();
 
     const [formData, setFormData] = useState({
         status: 'PENDENTE',
         title: '',
         description: '',
-        selectedOption: '',
     });
 
     const [options, setOptions] = useState<Usuario[]>([]);
@@ -32,41 +30,43 @@ const CriarTask = () => {
         UsuarioService.getUsuarioDev()
             .then((data) => {
                 setOptions(data);
-                console.log(data); // Verifique a estrutura dos dados no console
             })
             .catch((error) => {
                 console.error('Erro ao listar usuários:', error);
             });
-    }, []); // Passando um array vazio para garantir que a requisição seja feita apenas uma vez
+
+        TaskService.getTask(userId, taskId)
+            .then((data) => {
+                setFormData({
+                    status: data.status,
+                    title: data.title,
+                    description: data.description,
+                });
+            })
+            .catch((error) => {
+                console.error('Erro ao buscar a tarefa:', error);
+            });
+    }, [taskId]);
 
     const handleChange = (event: { target: { name: any; value: any; }; }) => {
         setFormData({ ...formData, [event.target.name]: event.target.value })
     }
 
     const handleSubmit = async (event: { preventDefault: () => void; }) => {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
 
-
-
-        TaskService.addTask(formData, id, formData.selectedOption)
+        TaskService.updateTask(formData, taskId, userId)
             .then((response) => {
-                console.log('Usuario adicionado: ', formData)
-                setFormData({
-                    status: 'PENDENTE',
-                    title: '',
-                    description: '',
-                    selectedOption: '',
-                })
+                console.log('Tarefa atualizada: ', formData);
+                navigate('/listarTask');
             }).catch((error: { data: any; }) => {
-                console.log('Erro ao adicionar o usuario:', error)
+                console.log('Erro ao atualizar a tarefa:', error);
             })
-
-        navigate('/');
     };
 
     return (
         <div className={"formulario"}>
-            <h2>Criar Tarefa</h2>
+            <h2>Editar Tarefa</h2>
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                     <Form.Label>Titulo</Form.Label>
@@ -87,7 +87,6 @@ const CriarTask = () => {
                         id="description"
                         name="description"
                         value={formData.description}
-
                         onChange={handleChange}
                     />
                 </Form.Group>
@@ -123,26 +122,10 @@ const CriarTask = () => {
                             </div>
                         </Form.Group>
                     </Col>
-                    <Col>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Atribuido para:</Form.Label>
-                            <Form.Select
-                                id="selectedOption"
-                                name="selectedOption"
-                                value={formData.selectedOption}
-                                onChange={handleChange}
-                            >
-                                <option value="">Selecione uma opção</option>
-                                {options != null ? options.map((option) => (
-                                    <option key={option.id} value={option.id}>{option.name}</option>
-                                )) : null}
-                            </Form.Select>
-                        </Form.Group>
-                    </Col>
                 </Row>
                 <Row>
                     <Col className="buttons">
-                        <Button type="submit">Registrar</Button>
+                        <Button type="submit">Salvar</Button>
                         <Button onClick={() => navigate('/')}>Voltar</Button>
                     </Col>
                 </Row>
@@ -151,4 +134,4 @@ const CriarTask = () => {
     );
 };
 
-export default CriarTask;
+export default EditarTask;

@@ -1,134 +1,81 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import { useRouter } from "next/router";
+import React, { useContext, useEffect, useState } from 'react'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { useNavigate } from 'react-router-dom'
+import AuthContext from "@/components/authContext";
+import subtaskService from '@/services/subtaskService';
 
 const CriarSubTask = () => {
-  const router = useRouter();
+  const navigate = useNavigate()
+  // pegando id do usuario logado
+  const { id } = useContext(AuthContext);
+  const { idTask } = useContext(AuthContext)
+
+
   const [formData, setFormData] = useState({
-    tempoEmHoras: "",
-    descricao: "",
+    description: '',
+    timeHours: '',
   });
 
-  const handleChange = (event: any) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+  const handleChange = (event: { target: { name: any; value: any; }; }) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value })
+  }
+
+  const handleSubmit = async (event: { preventDefault: () => void; }) => {
+    event.preventDefault(); // Prevent default form submission
+
+
+    subtaskService.addSubTask(formData, id, idTask)
+      .then((response) => {
+        console.log('SubTask Adicionada: ', formData)
+        setFormData({
+          description: '',
+          timeHours: '',
+        })
+      }).catch((error: { data: any; }) => {
+        console.log('Erro ao adicionar o usuario:', error)
+      })
+
+    navigate('/')
   };
 
-  // const handleSubmit = async (event: any) => {
-  //     event.preventDefault();
-  //     // Lógica para adicionar uma subtask
-  // };
   return (
-    <div style={fullScreenContainerStyle}>
-      <div style={formWrapperStyle}>
-        <h2>Criar SubTask</h2>
-        <Form /*style={formStyle} onSubmit={handleSubmit}*/>
-          <Form.Group className="mb-3">
-            <Form.Label style={labelStyle}>Tempo em Horas</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Insira o tempo em horas"
-              id="tempoEmHoras"
-              name="tempoEmHoras"
-              value={formData.tempoEmHoras}
-              style={inputStyle}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label style={labelStyle}>Descrição</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Insira a descrição"
-              id="descricao"
-              name="descricao"
-              value={formData.descricao}
-              style={inputStyle}
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Row>
-            <Col className="buttons" style={buttonContainerStyle}>
-              <Button type="submit" style={submitButtonStyle}>
-                Registrar
-              </Button>
-              <Button onClick={() => router.push("/")} style={backButtonStyle}>
-                Voltar
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
+    <div className={"formulario"}>
+      <h2>Criar Sub Tarefa</h2>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Titulo</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Insira o tempo em horas"
+            id="timeHours"
+            name="timeHours"
+            value={formData.timeHours}
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Descrição</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Insira a descrição"
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </Form.Group>
+        <Row>
+          <Col className="buttons">
+            <Button type="submit">Registrar</Button>
+            <Button onClick={() => navigate('/')}>Voltar</Button>
+          </Col>
+        </Row>
+      </Form>
     </div>
   );
-};
-
-// Estilos CSS
-const fullScreenContainerStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100vh",
-  backgroundColor: "#ffff",
-};
-
-const formWrapperStyle = {
-  width: "100%",
-  maxWidth: "600px",
-  padding: "20px",
-  backgroundColor: "#fff",
-  borderRadius: "8px",
-  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-};
-
-const headerStyle = {
-  textAlign: "center",
-  marginBottom: "20px",
-  color: "#333",
-};
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "15px",
-};
-
-const labelStyle = {
-  fontWeight: "bold",
-  color: "#555",
-};
-
-const inputStyle = {
-  height: "45px",
-  borderRadius: "4px",
-  borderColor: "#ccc",
-  paddingLeft: "10px",
-};
-
-const buttonContainerStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "20px",
-};
-
-const submitButtonStyle = {
-  backgroundColor: "#28a745",
-  borderColor: "#28a745",
-  color: "#fff",
-  padding: "10px 20px",
-  borderRadius: "4px",
-  fontWeight: "bold",
-};
-
-const backButtonStyle = {
-  backgroundColor: "#6c757d",
-  borderColor: "#6c757d",
-  color: "#fff",
-  padding: "10px 20px",
-  borderRadius: "4px",
-  fontWeight: "bold",
 };
 
 export default CriarSubTask;

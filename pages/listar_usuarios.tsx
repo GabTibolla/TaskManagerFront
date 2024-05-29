@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import UsuarioService from "@/services/usuarioService";
+import AuthContext from "@/components/authContext";
 
 const ListarUsuarios = () => {
-    const [usuarios, setUsuarios] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const navigate = useNavigate()
+    const [usuarios, setUsuarios] = useState<any>(null)
+    const [error, setError] = useState(null)
+    const { id } = useContext(AuthContext)
 
     useEffect(() => {
         UsuarioService.getUsuarios().then((data) => {
-            setUsuarios(data)
+            const filteredData = data.filter((usuario: any) => usuario.id !== id)
+            setUsuarios(filteredData)
             console.log(data)
         }).catch((error) => {
             console.error('Erro ao listar usuários:', error)
@@ -19,15 +23,21 @@ const ListarUsuarios = () => {
         })
     }, [])
 
-    const handleRemove = async (id: any) => {
-        UsuarioService.deleteUsuario(id).then((data) => {
-            setUsuarios(usuarios.filter((usuario: { id: any }) => usuario.id !== id))
+
+    const handleRemove = async (idUsuario: any) => {
+        UsuarioService.deleteUsuario(idUsuario, id).then((data) => {
+
+            console.log(data)
         }).catch((error) => {
             console.error('Erro ao deletar usuario:', error)
             setError(error)
         })
+        navigate("/")
     }
 
+    const handleEditUsuario = (userId: any) => {
+        navigate(`/editarUsuario/${userId}`);
+    };
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -39,26 +49,31 @@ const ListarUsuarios = () => {
 
     return (
         <div>
+            {/* <PaginationU
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onChange={handlePageChange}
+            /> */}
             <h3>Lista de Usuarios</h3>
             <Table responsive="sm">
                 <thead>
                     <tr>
                         <th>Nome</th>
                         <th>Email</th>
-                        <th>Username</th>
+                        <th>Permissao</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {usuarios.map((usuario: any) => (
                         <tr key={usuario.id}>
-                            <td>{usuario.cpf}</td>
                             <td>{usuario.name}</td>
                             <td>{usuario.mail}</td>
+                            <td>{usuario.permission}</td>
                             <td>
-                                {/* <Button onClick={() => navigate(`/atualizar/${usuario.id}`)}>
+                                <Button onClick={() => handleEditUsuario(usuario.id)}>
                                     <FaEdit />
-                                </Button> */}
+                                </Button>
                                 <Button onClick={() => handleRemove(usuario.id)}>
                                     <FaTrash />
                                 </Button>

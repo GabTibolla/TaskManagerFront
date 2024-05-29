@@ -1,15 +1,17 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {useNavigate, useParams} from 'react-router-dom'
 import UsuarioService from "@/services/usuarioService";
+import AuthContext from "@/components/authContext";
 
 const Registrar = () => {
     const { itemId } = useParams()
     const [itemData, setItemData] = useState<any>(null)
     const navigate = useNavigate()
+    const { token } = useContext(AuthContext)
     const [formData, setFormData] = useState({
         username: '',
         nome: '',
@@ -19,7 +21,7 @@ const Registrar = () => {
 
     useEffect(() => {
         console.log(itemId)
-        UsuarioService.getUsuario(itemId).then((data: any) => {
+        UsuarioService.getUsuario(itemId, token).then((data: any) => {
             setItemData(data)
         }).catch()
     }, [itemId])
@@ -31,7 +33,7 @@ const Registrar = () => {
     const handleSubmit = async (event: { preventDefault: () => void; }) => {
         event.preventDefault(); // Prevent default form submission
 
-         UsuarioService.updateUsuario(itemId, formData).then( (data) => {
+        UsuarioService.updateUsuario(itemId, formData, token).then( (data) => {
             console.log('Usuario adicionado:')
              if(data === 204) {
                  navigate('/listar')
